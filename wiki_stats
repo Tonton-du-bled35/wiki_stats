@@ -1,0 +1,52 @@
+import requests
+
+# Remplacez 'VOTRE_CLE_API', 'VOTRE_REGION', 'VOTRE_NOM' et 'NOM_DE_VOTRE_FEMME' par les informations appropriées.
+API_KEY = 'VOTRE_CLE_API'
+REGION = 'VOTRE_REGION'
+SUMMONER_NAME = 'VOTRE_NOM'
+FEMME_NAME = 'NOM_DE_VOTRE_FEMME'
+
+# Obtenez l'identifiant (PUUID) des joueurs
+def get_puuid(summoner_name):
+    url = f'https://{REGION}.api.riotgames.com/val/players/v1/players/by-name/{summoner_name}'
+    headers = {
+        'X-Riot-Token': API_KEY,
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        return data['puuid']
+    else:
+        print(f"La requête a échoué pour {summoner_name} avec le code de statut : {response.status_code}")
+        return None
+
+# Obtenez les statistiques du joueur
+def get_player_stats(puuid):
+    url = f'https://{REGION}.api.riotgames.com/val/mmr/v1/players/{puuid}'
+    headers = {
+        'X-Riot-Token': API_KEY,
+    }
+    response = requests.get(url, headers=headers)
+    if response.status_code == 200:
+        data = response.json()
+        return data
+    else:
+        print(f"La requête des statistiques a échoué avec le code de statut : {response.status_code}")
+        return None
+
+# Obtenez les PUUID des joueurs
+puuid = get_puuid(SUMMONER_NAME)
+femme_puuid = get_puuid(FEMME_NAME)
+
+if puuid and femme_puuid:
+    # Obtenez les statistiques des joueurs
+    player_stats = get_player_stats(puuid)
+    femme_stats = get_player_stats(femme_puuid)
+
+    if player_stats and femme_stats:
+        # Affichez les statistiques des joueurs
+        print(f"Statistiques de {SUMMONER_NAME}:")
+        print(player_stats)
+        print("\n")
+        print(f"Statistiques de {FEMME_NAME}:")
+        print(femme_stats)
